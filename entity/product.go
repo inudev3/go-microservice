@@ -3,29 +3,41 @@ package entity
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"io"
+	"regexp"
 	"time"
 )
 
 type Product struct {
 	ID          int     `json:"id"`
-	Name        string  `json:"name"`
+	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description"`
-	Price       float32 `json:"price"`
-	SKU         string  `json:"SKU"`
+	Price       float32 `json:"price" validate:"gt=0"`
+	SKU         string  `json:"SKU" validate:"required,sku"`
 	CreatedAt   string  `json:"-"`
 	UpdatedAt   string  `json:"-"`
 	DeletedAt   string  `json:"-"`
 }
 type Products []*Product
 
-func (p Products) ToJSON(w io.Writer) error {
+func (p *Products) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
 	return e.Encode(p)
 }
 func (p *Product) FromJSON(r io.Reader) error {
 	e := json.NewDecoder(r)
 	return e.Decode(p)
+}
+func (p *Product) Validate() error {
+	validate := validator.New()
+	validate.RegisterValidation("sku", validateSKU)
+	return validate.Struct(p)
+}
+func validateSKU(fl validator.FieldLevel) bool {
+	re := regexp.MustCompile(`[a-z]+-[a-z]+-[a-z]+`)
+	matches := re.FindAllString(fl.Field().String(), -1)
+	return len(matches) == 1
 }
 
 var productList = Products{
@@ -34,8 +46,8 @@ var productList = Products{
 		ID:          1,
 		Name:        "Latte",
 		Description: "Frothy milky coffe",
-		Price:       2.45,
-		SKU:         "abc323",
+		Price:       6,
+		SKU:         "abc-def-hgi",
 		CreatedAt:   time.Now().UTC().String(),
 		UpdatedAt:   time.Now().UTC().String(),
 	},
@@ -44,7 +56,7 @@ var productList = Products{
 		Name:        "Espresso",
 		Description: "bitter taste",
 		Price:       1.95,
-		SKU:         "fbcj124",
+		SKU:         "abc-def-ghi",
 		CreatedAt:   time.Now().UTC().String(),
 		UpdatedAt:   time.Now().UTC().String(),
 	},

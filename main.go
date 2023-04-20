@@ -22,7 +22,9 @@ func main() {
 	putRouter := serveMux.Methods(http.MethodPut).Subrouter()
 	getRouter.HandleFunc("/", products.GetProducts)
 	addRouter.HandleFunc("/product", products.AddProduct)
+	addRouter.Use(products.MiddlewareValidation)
 	putRouter.HandleFunc("/product/{id:[0-9]+}", products.UpdateProduct)
+	putRouter.Use(products.MiddlewareValidation)
 
 	s := &http.Server{
 		Addr:         ":9090",
