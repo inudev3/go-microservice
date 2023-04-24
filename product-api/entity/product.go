@@ -8,11 +8,19 @@ import (
 	"regexp"
 	"time"
 )
-
+// Product defines the structure for an API product
+// swagger:model
 type Product struct {
+	// the id for this product
+	// required: true
+	// min: 1
 	ID          int     `json:"id"`
+	// the name of this product
+	// required: true
 	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description"`
+	// the price of this product
+	// min: 0
 	Price       float32 `json:"price" validate:"gt=0"`
 	SKU         string  `json:"SKU" validate:"required,sku"`
 	CreatedAt   string  `json:"-"`
