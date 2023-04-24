@@ -1,0 +1,98 @@
+basePath: /
+consumes:
+    - application/json
+definitions:
+    Product:
+        description: Product Product Product Product defines the structure for an API product
+        properties:
+            SKU:
+                description: s k u
+                type: string
+            description:
+                description: description
+                type: string
+                x-go-name: Description
+            id:
+                description: the id for this product
+                format: int64
+                minimum: 1
+                type: integer
+                x-go-name: ID
+            name:
+                description: the name of this product
+                type: string
+                x-go-name: Name
+            price:
+                description: the price of this product
+                format: float
+                minimum: 0
+                type: number
+                x-go-name: Price
+        required:
+            - id
+            - name
+        type: object
+        x-go-package: product-api/models
+info:
+    contact:
+        email: john.doe@example.com
+        name: John Doe
+    description: Documentation for Product API
+    license:
+        name: MIT
+        url: http://opensource.org/licenses/MIT
+    title: Product API
+    version: 1.0.0
+paths:
+    /:
+        get:
+            description: returns a list of products
+            operationId: listProducts
+            responses:
+                "200":
+                    $ref: '#/responses/productsResponse'
+            tags:
+                - products
+    /product:
+        post:
+            operationId: addProduct
+            responses:
+                "200":
+                    $ref: '#/responses/productResponse'
+            tags:
+                - products
+    /product/{id}:
+        put:
+            description: update a product
+            operationId: updateProduct
+            parameters:
+                - description: the id of the product
+                  format: int64
+                  in: path
+                  name: id
+                  required: true
+                  type: integer
+                  x-go-name: ID
+            responses:
+                "201":
+                    $ref: '#/responses/noContent'
+            tags:
+                - products
+produces:
+    - application/json
+responses:
+    noContent:
+        description: ""
+    productResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/Product'
+    productsResponse:
+        description: A list of products returns in the response
+        schema:
+            items:
+                $ref: '#/definitions/Product'
+            type: array
+schemes:
+    - http
+swagger: "2.0"
